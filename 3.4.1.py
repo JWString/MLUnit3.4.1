@@ -21,22 +21,22 @@ r = requests.get(f'https://www.quandl.com/api/v3/datasets/XFRA/{QUANDL_CODE}', p
 json = r.json()
 
 # COLUMN LOOKUP
-columnIndex = dict(zip(json['dataset']['column_names'], range(0, len(json['dataset']['column_names']))))
+column_index = dict(zip(json['dataset']['column_names'], range(0, len(json['dataset']['column_names']))))
 
 data = json['dataset']['data'][1:len(json['dataset']['data'])-1]
 
 
 highest = 0
 lowest = sys.maxsize
-maxDeltaDailyHighLow = 0
-prevClose = json['dataset']['data'][0][columnIndex['Close']]
-maxDeltaDailyClose = 0
-volumeSum = 0
+max_delta_daily_high_low = 0
+prev_close = json['dataset']['data'][0][column_index['Close']]
+max_delta_daily_close = 0
+volume_sum = 0
 
 for d in data:
-    high = d[columnIndex['High']]
-    low = d[columnIndex['Low']]
-    close = d[columnIndex['Close']]
+    high = d[column_index['High']]
+    low = d[column_index['Low']]
+    close = d[column_index['Close']]
 
     # TASK 3: CALCULATE HIGHEST AND LOWEST OPENING PRICES
     highest = high if high > highest else highest
@@ -44,27 +44,27 @@ for d in data:
 
     # TASK 4: LARGEST DELTA OF DAILY HIGH/LOW
     delta = high - low
-    maxDeltaDailyHighLow = delta if delta > maxDeltaDailyHighLow else maxDeltaDailyHighLow
+    max_delta_daily_high_low = delta if delta > max_delta_daily_high_low else max_delta_daily_high_low
 
     # TASK 5: LARGEST DELTA OF DAILY CLOSE
-    closeDelta = close - prevClose
-    maxDeltaDailyClose = closeDelta if closeDelta > maxDeltaDailyClose else maxDeltaDailyClose
+    close_delta = close - prev_close
+    max_delta_daily_close = close_delta if close_delta > max_delta_daily_close else max_delta_daily_close
 
-    volumeSum += d[columnIndex['Volume']]
-    prevClose = close
+    volume_sum += d[column_index['Volume']]
+    prev_close = close
 
 # TASK 6: VOLUME AVERAGE
-volumeAverage = volumeSum / len(data)
+volume_average = volume_sum / len(data)
 
 # TASK 7: MEDIAN VOLUME
-ci = columnIndex['Volume']
+ci = column_index['Volume']
 volume = sorted(map(lambda d: d[ci], data))
 vi = int(len(volume) / 2)
-medianVolume = (volume[vi-1] + volume[vi]) / 2 if len(volume) % 2 == 0 else volume[vi]
+median_volume = (volume[vi-1] + volume[vi]) / 2 if len(volume) % 2 == 0 else volume[vi]
 
 print(f'highest: {highest}')
 print(f'lowest: {lowest}')
-print(f'maxDeltaDailyHighLow: {maxDeltaDailyHighLow}')
-print(f'maxDeltaDailyClose: {maxDeltaDailyClose}')
-print(f'volumeAverage: {volumeAverage}')
-print(f'medianVolume: {medianVolume}')
+print(f'max_delta_daily_high_low: {max_delta_daily_high_low}')
+print(f'max_delta_daily_close: {max_delta_daily_close}')
+print(f'volume_average: {volume_average}')
+print(f'median_volume: {median_volume}')
